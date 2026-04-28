@@ -477,6 +477,7 @@ export default function App() {
     if (!user) return;
 
     setSubmitting(true);
+    const isNew = !editingPatient?.id;
     try {
       const data = {
         patient_name: formData.patient_name || '',
@@ -499,7 +500,6 @@ export default function App() {
 
       // Optimistic UI behavior: Switch view and reset form immediately if not editing
       // or at least clear form early to feel fast.
-      const isNew = !editingPatient?.id;
       
       const patientId = editingPatient?.id;
       const firestoreAction = (isNew || !patientId)
@@ -945,7 +945,9 @@ export default function App() {
     } catch (err: unknown) {
       console.error('Login error:', err);
       const error = err as { code?: string, message?: string };
-      if (error?.code === 'auth/configuration-not-found') {
+      if (error?.code === 'auth/popup-closed-by-user') {
+        addToast('Sign-in cancelled', 'info');
+      } else if (error?.code === 'auth/configuration-not-found') {
         addToast('Firebase Auth error: Configuration not found. Please check API Key and Authorized Domains.', 'error');
       } else {
         addToast(error?.message ?? 'Login failed', 'error');
