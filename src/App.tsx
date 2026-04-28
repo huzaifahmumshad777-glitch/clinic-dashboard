@@ -324,8 +324,12 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (u) => {
-      setUser(u);
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setUser(user);
+      } else {
+        setUser(null);
+      }
       setAuthLoading(false);
     });
 
@@ -942,6 +946,7 @@ export default function App() {
   const handleLogin = async () => {
     try {
       await loginWithGoogle();
+      window.location.href = "/";
     } catch (err: unknown) {
       console.error('Login error:', err);
       const error = err as { code?: string, message?: string };
